@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="DoodleJump/DoodleJump.vcxproj" Id="8d3eb1a8-2107-412b-b849-cb2dc9d98403" />
+</Solution>
