@@ -1,9 +1,10 @@
 #pragma once
+#include"Framework.h"
 extern bool isPressed;
-bool isPressed = false;
+extern FRKey currentKey;
 
 extern bool isFall;
-bool isFall = false;
+
 class Environment
 {
 

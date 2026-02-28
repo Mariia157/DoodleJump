@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "IEntity.h"
 #include "Environment.h"
+#include "Constants.h"
 
 /* Test Framework realization */
 class MyFramework : public Framework {
@@ -14,8 +15,8 @@ public:
 
 	virtual void PreInit(int& width, int& height, bool& fullscreen)
 	{
-		width = 320;
-		height = 200;
+		width = 600;
+		height = 500;
 		fullscreen = false;
 	}
 
@@ -32,10 +33,28 @@ public:
 	}
 
 	virtual bool Tick() {
-
-        drawTestBackground();
-		if (doodle) {
-
+		Coordinates curCoordinates = doodle->getCoordinates();
+		int w, h;
+		int doodleH = doodle->getDoodleH();
+		getScreenSize(w, h);
+        drawTestBackground();{
+		if (isPressed) {
+			switch (currentKey) {
+			case FRKey::RIGHT:
+				doodle->move(FRSide::RIGHT);
+				break;
+			case FRKey::LEFT:
+				doodle->move(FRSide::LEFT);
+				break;
+			
+			default:
+				break;
+			}
+		}
+		if (curCoordinates.y > h - doodleH) {
+			doodle->jump();
+			isFall = true;
+		}
 			doodle->fall();
 			doodle->reDraw();
 		}
@@ -52,25 +71,7 @@ public:
 
 	virtual void onKeyPressed(FRKey k) {
 		isPressed = true;
-		switch (k)
-		{
-		case FRKey::RIGHT:
-			do doodle->move(FRSide::RIGHT);
-			while (isPressed);
-			break;
-		case FRKey::LEFT:
-			doodle->move(FRSide::LEFT);
-			break;
-		case FRKey::DOWN:
-			break;
-		case FRKey::UP:
-			doodle->jump();
-			break;
-		default:
-			break;
-		} {
-			
-		}
+		currentKey = k;
 
 		
 	}
