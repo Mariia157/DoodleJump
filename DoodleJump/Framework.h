@@ -47,6 +47,11 @@ enum class FRMouseButton {
 	COUNT
 };
 
+enum class FRSide {
+	RIGHT,
+	LEFT
+};
+
 class Framework {
 public:
 

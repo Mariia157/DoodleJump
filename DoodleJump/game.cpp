@@ -1,5 +1,5 @@
 
-
+#include <iostream>
 #include "Framework.h"
 #include "Player.h"
 #include "IEntity.h"
@@ -19,7 +19,7 @@ public:
 
 	virtual bool Init() {
 		
-		Player* doodle = new Player();
+		doodle = new Player();
 		
 
 		return true;
@@ -32,9 +32,10 @@ public:
 	virtual bool Tick() {
 
         drawTestBackground();
-		doodle->move(doodle->getCoordinates());
-		
-
+		if (doodle) {
+			doodle->fall();
+			doodle->reDraw();
+		}
 		return false;
 	}
 
@@ -47,6 +48,24 @@ public:
 	}
 
 	virtual void onKeyPressed(FRKey k) {
+		switch (k)
+		{
+		case FRKey::RIGHT:
+			doodle->move(FRSide::RIGHT);
+			break;
+		case FRKey::LEFT:
+			doodle->move(FRSide::LEFT);
+			break;
+		case FRKey::DOWN:
+			break;
+		case FRKey::UP:
+			doodle->jump();
+			break;
+		default:
+			break;
+		} {
+			
+		}
 	}
 
 	virtual void onKeyReleased(FRKey k) {
