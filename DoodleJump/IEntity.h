@@ -1,5 +1,6 @@
 #pragma once
 #include "Framework.h"
+
 struct Coordinates {
 	Coordinates() {}
 	Coordinates(float x_, float y_) {

@@ -1,6 +1,7 @@
 #pragma once
 #include "IEntity.h"
 #include <iostream>
+#include "Environment.h"
 
 class Player : public IEntity {
 
@@ -32,8 +33,9 @@ public:
 
 	void move(FRSide side) override {
 		Coordinates curCoordinates = getCoordinates();
-		switch(side) {
-			case FRSide::RIGHT:{
+			do {
+			switch (side) {
+			case FRSide::RIGHT: {
 				curCoordinates.x += 5;
 				setCoordinates(curCoordinates);
 				break;
@@ -43,7 +45,8 @@ public:
 				setCoordinates(curCoordinates);
 				break;
 			}
-		}
+			}
+		} while (isPressed == true);
 	}
 
 	void jump() {

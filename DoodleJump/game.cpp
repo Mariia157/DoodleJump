@@ -3,6 +3,8 @@
 #include "Framework.h"
 #include "Player.h"
 #include "IEntity.h"
+#include "Environment.h"
+
 /* Test Framework realization */
 class MyFramework : public Framework {
 	Player* doodle = nullptr;
@@ -33,6 +35,7 @@ public:
 
         drawTestBackground();
 		if (doodle) {
+
 			doodle->fall();
 			doodle->reDraw();
 		}
@@ -48,10 +51,12 @@ public:
 	}
 
 	virtual void onKeyPressed(FRKey k) {
+		isPressed = true;
 		switch (k)
 		{
 		case FRKey::RIGHT:
-			doodle->move(FRSide::RIGHT);
+			do doodle->move(FRSide::RIGHT);
+			while (isPressed);
 			break;
 		case FRKey::LEFT:
 			doodle->move(FRSide::LEFT);
@@ -66,9 +71,12 @@ public:
 		} {
 			
 		}
+
+		
 	}
 
 	virtual void onKeyReleased(FRKey k) {
+		isPressed = false;
 	}
 	
 	virtual const char* GetTitle() override
