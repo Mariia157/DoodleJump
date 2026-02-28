@@ -1,10 +1,13 @@
 
 
 #include "Framework.h"
-
+#include "Player.h"
+#include "IEntity.h"
 /* Test Framework realization */
 class MyFramework : public Framework {
-
+	Player* doodle = nullptr;
+	
+	
 public:
 
 	virtual void PreInit(int& width, int& height, bool& fullscreen)
@@ -15,16 +18,23 @@ public:
 	}
 
 	virtual bool Init() {
+		
+		Player* doodle = new Player();
+		
 
 		return true;
 	}
 
 	virtual void Close() {
-
+		delete doodle;
 	}
 
 	virtual bool Tick() {
+
         drawTestBackground();
+		doodle->move(doodle->getCoordinates());
+		
+
 		return false;
 	}
 
