@@ -37,6 +37,8 @@ public:
 	virtual void move(FRSide side) = 0;
 
 	virtual void reDraw() = 0;
+
+	virtual void setSpritePicture(const char* path) = 0;
 };
 
 //func = 0; обязательная реализация для наследников

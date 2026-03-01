@@ -9,9 +9,11 @@
 /* Test Framework realization */
 class MyFramework : public Framework {
 	Player* doodle = nullptr;
-	
+	Environment* environment;
 	
 public:
+
+	
 
 	virtual void PreInit(int& width, int& height, bool& fullscreen)
 	{
@@ -23,7 +25,7 @@ public:
 	virtual bool Init() {
 		
 		doodle = new Player();
-		
+		environment = new Environment();
 
 		return true;
 	}
@@ -33,6 +35,8 @@ public:
 	}
 
 	virtual bool Tick() {
+		drawTestBackground();
+		environment->drawBackground();
 		Coordinates curCoordinates = doodle->getCoordinates();
 		int w, h;
 		int doodleH = doodle->getDoodleH();

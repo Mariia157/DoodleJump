@@ -9,14 +9,15 @@ class Player : public IEntity {
 	int doodleW = 0, doodleH = 0;
 	int speed = 0; 
 	int w = 0, h = 0;
-	
+	const char* spritePathLeft = "C:/data/blue-lik-left.png";
+	const char* spritePathRight = "C:/data/blue-lik-right.png";
 
 public:
 
 	Player() {
 		
 		int w = 0, h = 0;
-		doodle = createSprite("C:/Users/Марія/source/repos/DoodleJump/x64/Debug/data/blue-lik-left.png");
+		doodle = createSprite("C:/data/blue-lik-left.png");
 		getScreenSize(w, h);
 		getSpriteSize(doodle, doodleW, doodleH);
 
@@ -35,11 +36,17 @@ public:
 		drawSprite(doodle,curCoordinates.x, curCoordinates.y );
 	}
 
+	void setSpritePicture(const char* path) override {
+		destroySprite(doodle);
+		doodle = createSprite(path);
+	}
+
 	void move(FRSide side) override {
 		Coordinates curCoordinates = getCoordinates();
 		getScreenSize(w, h);
 			switch (side) {
 			case FRSide::RIGHT: {
+				setSpritePicture(spritePathRight);
 				curCoordinates.x += 5;
 				if (curCoordinates.x > w)
 					curCoordinates.x = 0;
@@ -47,6 +54,7 @@ public:
 				break;
 			}
 			case FRSide::LEFT: {
+				setSpritePicture(spritePathLeft);
 				curCoordinates.x -= 5;
 				if (curCoordinates.x < 0)
 					curCoordinates.x = w;
