@@ -2,7 +2,8 @@
 #include "IEntity.h"
 #include <iostream>
 #include "Environment.h"
-
+#include "Constants.h"
+#include "Hitbox.h"
 class Player : public IEntity {
 
 	Sprite* doodle = nullptr;
@@ -11,6 +12,9 @@ class Player : public IEntity {
 	int w = 0, h = 0;
 	const char* spritePathLeft = "C:/data/blue-lik-left.png";
 	const char* spritePathRight = "C:/data/blue-lik-right.png";
+	bool isFall = false;
+	bool isUp = false;
+	//Hitbox* hitbox = nullptr;
 
 public:
 
@@ -29,6 +33,9 @@ public:
 	}
 	~Player() { if (doodle) destroySprite(doodle); }
 
+	bool getIsFall() { return isFall; }
+	bool getIsUp() { return isUp; }
+
 	int getDoodleH() { return doodleH; }
 
 	void reDraw() override {
@@ -44,28 +51,30 @@ public:
 	void move(FRSide side) override {
 		Coordinates curCoordinates = getCoordinates();
 		getScreenSize(w, h);
-			switch (side) {
-			case FRSide::RIGHT: {
-				setSpritePicture(spritePathRight);
-				curCoordinates.x += 5;
-				if (curCoordinates.x > w)
-					curCoordinates.x = 0;
-				setCoordinates(curCoordinates);
-				break;
-			}
-			case FRSide::LEFT: {
-				setSpritePicture(spritePathLeft);
-				curCoordinates.x -= 5;
-				if (curCoordinates.x < 0)
-					curCoordinates.x = w;
-				setCoordinates(curCoordinates);
-				break;
-			}
-			}
+		switch (side) {
+		case FRSide::RIGHT: {
+			setSpritePicture(spritePathRight);
+			curCoordinates.x += moveSpeed;
+			if (curCoordinates.x > w)
+				curCoordinates.x = 0;
+			setCoordinates(curCoordinates);
+			break;
+		}
+		case FRSide::LEFT: {
+			setSpritePicture(spritePathLeft);
+			curCoordinates.x -= moveSpeed;
+			if (curCoordinates.x < 0)
+				curCoordinates.x = w;
+			setCoordinates(curCoordinates);
+			break;
+		}
+		}
 	
 	}
 
 	void jump() {
+		
+		isUp = true;
 		Coordinates curCoordinates = getCoordinates();
 		curCoordinates.y -= 100;
 		setCoordinates(curCoordinates);
@@ -77,11 +86,27 @@ public:
 		getScreenSize(w, h);
 		Coordinates curCoordinates = getCoordinates();
 		
-			if (curCoordinates.y <= h - doodleH) {
-				std::cout << curCoordinates.x << curCoordinates.y << std::endl;
-				curCoordinates.y += 0.5;
-				setCoordinates(curCoordinates);
-			}
+		if (curCoordinates.y <= h - doodleH) {
+			isUp = false;
+			isFall = true;
+			curCoordinates.y += 0.5;
+			setCoordinates(curCoordinates);
+		}
+		else isFall = false;
 		
+	}
+
+	bool onCollided(IEntity* other) override {
+		Coordinates currCoordinates = getCoordinates();
+		if (other) {
+			if (
+				
+				
+				
+				) {
+				//взять ширину высоту текущего энтити с координатами, вычислить хитбокс и сравнить с хитбоксом other
+			}
+		}
+
 	}
 };

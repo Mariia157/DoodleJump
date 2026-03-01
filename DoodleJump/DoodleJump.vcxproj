@@ -134,7 +134,9 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Environment.h" />
     <ClInclude Include="Framework.h" />
+    <ClInclude Include="Hitbox.h" />
     <ClInclude Include="IEntity.h" />
+    <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>

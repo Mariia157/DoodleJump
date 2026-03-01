@@ -39,6 +39,9 @@ public:
 	virtual void reDraw() = 0;
 
 	virtual void setSpritePicture(const char* path) = 0;
+
+	virtual bool onCollided(IEntity* other) = 0;
+	//принимает другого entity, если обьекты соприкоснулись то ->...
 };
 
 //func = 0; обязательная реализация для наследников

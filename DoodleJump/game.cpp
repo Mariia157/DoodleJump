@@ -35,13 +35,13 @@ public:
 	}
 
 	virtual bool Tick() {
-		drawTestBackground();
 		environment->drawBackground();
 		Coordinates curCoordinates = doodle->getCoordinates();
 		int w, h;
 		int doodleH = doodle->getDoodleH();
+		bool isFall = doodle->getIsFall();
 		getScreenSize(w, h);
-        drawTestBackground();{
+
 		if (isPressed) {
 			switch (currentKey) {
 			case FRKey::RIGHT:
@@ -55,13 +55,13 @@ public:
 				break;
 			}
 		}
-		if (curCoordinates.y > h - doodleH) {
+		if (!isFall) {
 			doodle->jump();
-			isFall = true;
+			
 		}
-			doodle->fall();
-			doodle->reDraw();
-		}
+		doodle->fall();
+		doodle->reDraw();
+		
 		return false;
 	}
 
