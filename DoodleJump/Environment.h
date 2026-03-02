@@ -5,7 +5,6 @@ extern bool isPressed;
 extern FRKey currentKey;
 
 
-
 class Environment
 {
     Sprite* backgroundSprite = nullptr;

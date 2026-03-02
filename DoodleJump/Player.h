@@ -4,6 +4,8 @@
 #include "Environment.h"
 #include "Constants.h"
 #include "Hitbox.h"
+#include "Platform.h"
+#include <vector>
 class Player : public IEntity {
 
 	Sprite* doodle = nullptr;
@@ -15,7 +17,7 @@ class Player : public IEntity {
 	bool isFall = false;
 	bool isUp = false;
 	//Hitbox* hitbox = nullptr;
-
+	std::vector<Platform*> platforms;
 public:
 
 	Player() {
@@ -36,7 +38,8 @@ public:
 	bool getIsFall() { return isFall; }
 	bool getIsUp() { return isUp; }
 
-	int getDoodleH() { return doodleH; }
+	virtual int getWidth() { return doodleW; };
+	virtual int getHeight() { return doodleH; };
 
 	void reDraw() override {
 		Coordinates curCoordinates = getCoordinates();
@@ -47,6 +50,12 @@ public:
 		destroySprite(doodle);
 		doodle = createSprite(path);
 	}
+
+	void setPlatforms(std::vector<Platform*> p) {
+		platforms = p;
+	}
+
+	int getDoodleH() { return doodleH; }
 
 	void move(FRSide side) override {
 		Coordinates curCoordinates = getCoordinates();
@@ -91,22 +100,37 @@ public:
 			isFall = true;
 			curCoordinates.y += 0.5;
 			setCoordinates(curCoordinates);
+
+			for (auto* platform : platforms) {
+				if (onCollided(platform)) {
+					// приземлился на платформу
+					isUp = false;
+					isFall = false;
+					jump();
+				}
+			} 
 		}
 		else isFall = false;
-		
 	}
 
 	bool onCollided(IEntity* other) override {
-		Coordinates currCoordinates = getCoordinates();
-		if (other) {
-			if (
-				
-				
-				
-				) {
-				//взять ширину высоту текущего энтити с координатами, вычислить хитбокс и сравнить с хитбоксом other
-			}
-		}
+        if (!other) return false;
 
+		Coordinates cur = getCoordinates();
+		Coordinates otherPos = other->getCoordinates();
+
+		int otherW = other->getWidth();
+		int otherH = other->getHeight();
+
+		// Проверка пересечения прямоугольников
+		bool collided =
+			cur.x < otherPos.x + otherW &&
+			cur.x + doodleW > otherPos.x &&
+			cur.y < otherPos.y + otherH &&
+			cur.y + doodleH > otherPos.y;
+
+		return collided;
 	}
-};
+
+	};
+

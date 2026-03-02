@@ -32,9 +32,11 @@ class IEntity {
 public:
 
 	virtual Coordinates getCoordinates() { return coordinates; }
+	virtual int getWidth() = 0;
+	virtual int getHeight() = 0;
 	virtual void setCoordinates(Coordinates coordinatesNew) { coordinates = coordinatesNew; }
 
-	virtual void move(FRSide side) = 0;
+	virtual void move(FRSide side) {};
 
 	virtual void reDraw() = 0;
 
