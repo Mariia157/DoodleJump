@@ -14,6 +14,7 @@ class MyFramework : public Framework {
 	Player* doodle = nullptr;
 	Environment* environment;
 	std::vector<Platform*> platforms;
+	std::vector<IEntity*> entities;
 	float cameraOffset = 0.0f;
 public:
 
@@ -21,7 +22,7 @@ public:
 
 	virtual void PreInit(int& width, int& height, bool& fullscreen)
 	{
-		int userW = 0;
+		/*int userW = 0;
 		int userH = 0;
 		std::cout << "Enter window width: ";
 		std::cin >> userW;
@@ -29,7 +30,9 @@ public:
 		std::cin >> userH;
 		std::cout << std::endl;
 		width = userW;
-		height = userH;
+		height = userH;*/
+		width = 600;
+		height = 800;
 
 		fullscreen = false;
 	}
@@ -39,13 +42,15 @@ public:
 		doodle = new Player();
 		environment = new Environment();
 		// Создаём платформы
-		platforms.push_back(new Platform(50, 150, "C:/data/platform.png"));
-		platforms.push_back(new Platform(150, 120, "C:/data/platform.png"));
-		platforms.push_back(new Platform(250, 90, "C:/data/platform.png"));
+		platforms.push_back(new Platform(250, 700, "C:/data/achievements.png"));
+		platforms.push_back(new Platform(300, 650, "C:/data/achievements.png"));
+		platforms.push_back(new Platform(250, 90, "C:/data/achievements.png"));
 
-		doodle->setPlatforms(platforms);
-
-		doodle->setPlatforms(platforms);  // передаём список
+		//doodle->setPlatforms(platforms);  // передаём список
+		entities.push_back(doodle);
+		for (auto* p : platforms) {
+			entities.push_back(p);
+		}
 		return true;
 	}
 
@@ -67,37 +72,44 @@ public:
 			cameraOffset += shift;
 
 			// Двигаем игрока вниз
-			doodle->setCoordinates(Coordinates(curCoordinates.x, h / 2));
+			/*doodle->setCoordinates(Coordinates(curCoordinates.x, h / 2));*/
+		}
+				
+		if (isPressed) {
+			switch (currentKey) {
+			case FRKey::RIGHT:
+				doodle->move(FRSide::RIGHT);
+				break;
+			case FRKey::LEFT:
+				doodle->move(FRSide::LEFT);
+				break;
 
-			// Двигаем все платформы вниз
-			for (auto* p : platforms) {
-				Coordinates pos = p->getCoordinates();
-				pos.y += shift;
-				p->setCoordinates(pos);
+			default:
+				break;
 			}
+		}
+		if (!isFall) {
+			doodle->jump();
 
-			if (isPressed) {
-				switch (currentKey) {
-				case FRKey::RIGHT:
-					doodle->move(FRSide::RIGHT);
-					break;
-				case FRKey::LEFT:
-					doodle->move(FRSide::LEFT);
-					break;
-
-				default:
-					break;
+		}
+		doodle->fall();
+		for (auto* entity : entities) {
+			if (!entity) continue;
+			Player* player = static_cast<Player*>(entity);
+			if (player) {
+				for (auto* entityOther : entities) {
+					if (player == entityOther) continue;
+					if (player->onCollided(entityOther)) {
+						std::cout << "Collided!" << std::endl;
+					}
 				}
 			}
-			if (!isFall) {
-				doodle->jump();
+			entity->reDraw();
 
-			}
-			doodle->fall();
-			doodle->reDraw();
-
-			return false;
 		}
+
+		
+		return false;
 	}
 
 		virtual void onMouseMove(int x, int y, int xrelative, int yrelative) {

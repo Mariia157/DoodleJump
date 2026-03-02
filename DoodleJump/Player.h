@@ -16,8 +16,7 @@ class Player : public IEntity {
 	const char* spritePathRight = "C:/data/blue-lik-right.png";
 	bool isFall = false;
 	bool isUp = false;
-	//Hitbox* hitbox = nullptr;
-	std::vector<Platform*> platforms;
+	//Hitbox* hitbox = nullptr
 public:
 
 	Player() {
@@ -49,10 +48,6 @@ public:
 	void setSpritePicture(const char* path) override {
 		destroySprite(doodle);
 		doodle = createSprite(path);
-	}
-
-	void setPlatforms(std::vector<Platform*> p) {
-		platforms = p;
 	}
 
 	int getDoodleH() { return doodleH; }
@@ -100,15 +95,6 @@ public:
 			isFall = true;
 			curCoordinates.y += 0.5;
 			setCoordinates(curCoordinates);
-
-			for (auto* platform : platforms) {
-				if (onCollided(platform)) {
-					// приземлился на платформу
-					isUp = false;
-					isFall = false;
-					jump();
-				}
-			} 
 		}
 		else isFall = false;
 	}

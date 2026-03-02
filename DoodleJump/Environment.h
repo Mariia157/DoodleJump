@@ -8,7 +8,7 @@ extern FRKey currentKey;
 class Environment
 {
     Sprite* backgroundSprite = nullptr;
-    const char* backgroundPicture = "C:/data/bck.png";
+    const char* backgroundPicture = "C:/data/bck@2x.png";
 public:
 
     Environment() { setBackgroundPicture(backgroundPicture); }
