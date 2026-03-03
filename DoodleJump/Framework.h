@@ -15,6 +15,7 @@
 // Bonus for any found bugs in the framework!
 
 class Sprite;
+struct Platform; // forward declaration so Framework can reference Platform*
 
 FRAMEWORK_API Sprite* createSprite(const char* path);
 FRAMEWORK_API void drawSprite(Sprite*, int x, int y);
@@ -77,6 +78,20 @@ public:
 	virtual void onKeyReleased(FRKey k) = 0;
 
 	virtual const char* GetTitle() = 0;
+	
+	virtual void movement() = 0;
+
+	virtual void collision() = 0;
+
+	virtual void cameraMovement() = 0;
+
+	virtual void generatePlatforms() = 0;
+
+	virtual void erasePlatforms() = 0;
+	
+	virtual void spawnEnemyOnPlatform(Platform* p) = 0;
+
+	virtual void eraseEnemies() = 0;
 
 	virtual ~Framework() {};
 };

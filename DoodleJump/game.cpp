@@ -15,66 +15,55 @@ class MyFramework : public Framework {
 	Environment* environment;
 	std::vector<Platform*> platforms;
 	std::vector<IEntity*> entities;
+	float lastPlatformY = 0.0f;
 	float cameraOffset = 0.0f;
+	int screenW = 500;
+	int screenH = 600;
+	Sprite* scoreSprite = nullptr;
+	int score = 0;
+	float highestY = 0.0f;
+	std::vector<Enemy*> enemies;
+	float highestPlatformY = 0.0f;  // Y самой высокой платформы
 public:
 
 
 
 	virtual void PreInit(int& width, int& height, bool& fullscreen)
 	{
-		/*int userW = 0;
-		int userH = 0;
-		std::cout << "Enter window width: ";
-		std::cin >> userW;
-		std::cout << std::endl << "Enter window height: ";
-		std::cin >> userH;
-		std::cout << std::endl;
-		width = userW;
-		height = userH;*/
-		width = 600;
-		height = 800;
+		
+		//environment->setWindowSize(width, height);
+		width = 500;
+		height = 600;
 
 		fullscreen = false;
 	}
+
+	
 
 	virtual bool Init() {
 
 		doodle = new Player();
 		environment = new Environment();
-		// Создаём платформы
-		platforms.push_back(new Platform(250, 700, "C:/data/achievements.png"));
-		platforms.push_back(new Platform(300, 650, "C:/data/achievements.png"));
-		platforms.push_back(new Platform(250, 90, "C:/data/achievements.png"));
-
-		//doodle->setPlatforms(platforms);  // передаём список
 		entities.push_back(doodle);
-		for (auto* p : platforms) {
+		scoreSprite = createSprite("C:/data/top-score@2x.png");
+		/// Начальные платформы
+		lastPlatformY = screenH;
+		for (int i = 0; i < 8; i++) {
+			float randX = rand() % (screenW - 64);
+			lastPlatformY -= 60.0f;
+			Platform* p = new Platform(randX, lastPlatformY, "C:/data/platform.png");
 			entities.push_back(p);
+			platforms.push_back(p);
+			
 		}
+		
 		return true;
 	}
-
 	virtual void Close() {
 		delete doodle;
 	}
 
-	virtual bool Tick() {
-		environment->drawBackground();
-		Coordinates curCoordinates = doodle->getCoordinates();
-		int w, h;
-		int doodleH = doodle->getDoodleH();
-		bool isFall = doodle->getIsFall();
-		getScreenSize(w, h);
-
-		// Камера двигается только вверх
-		if (curCoordinates.y < h / 2) {
-			float shift = h / 2 - curCoordinates.y;
-			cameraOffset += shift;
-
-			// Двигаем игрока вниз
-			/*doodle->setCoordinates(Coordinates(curCoordinates.x, h / 2));*/
-		}
-				
+	virtual void movement() {
 		if (isPressed) {
 			switch (currentKey) {
 			case FRKey::RIGHT:
@@ -83,32 +72,162 @@ public:
 			case FRKey::LEFT:
 				doodle->move(FRSide::LEFT);
 				break;
-
 			default:
 				break;
 			}
 		}
-		if (!isFall) {
-			doodle->jump();
+	}
 
+	
+
+	virtual void cameraMovement() {
+		float highestPlatformY = 0.0f;
+		int w, h;
+		getScreenSize(w, h);
+		Coordinates doodlePos = doodle->getCoordinates();
+
+		// Камера двигается вверх за игроком
+		if (doodlePos.y < h / 2) {
+			float shift = h / 2 - doodlePos.y;
+			cameraOffset += shift;
+
+			score = static_cast<int>(cameraOffset / 10);
+
+			// Двигаем игрока вниз
+			doodle->setCoordinates(Coordinates(doodlePos.x, h / 2));
+
+			// Двигаем все платформы вниз
+			for (auto* p : platforms) {
+				Coordinates pos = p->getCoordinates();
+				pos.y += shift;
+				p->setCoordinates(pos);
+			}
+			for (auto* e : enemies) {
+				Coordinates pos = e->getCoordinates();
+				pos.y += shift;
+				e->setCoordinates(pos);
+			}
+						
+			lastPlatformY += shift;
+			generatePlatforms();
+			erasePlatforms();
+			eraseEnemies();
 		}
-		doodle->fall();
+	}
+
+	// В полях класса:
+	
+
+	virtual void generatePlatforms() {
+		int w, h;
+		getScreenSize(w, h);
+		// Находим самую высокую платформу
+		highestPlatformY = h;
+		for (auto* p : platforms) {
+			highestPlatformY = std::min(highestPlatformY, p->getCoordinates().y);
+		}
+		// Генерируем пока есть место сверху
+		while (highestPlatformY > 0) {
+			float randX = rand() % (w - 64);
+			highestPlatformY -= 125.0f;
+
+			Platform* p = new Platform(randX, highestPlatformY, "C:/data/platform.png");
+			entities.push_back(p);
+			platforms.push_back(p);
+			spawnEnemyOnPlatform(p);
+		}
+	}
+
+	virtual void erasePlatforms() {
+		int w, h;
+		getScreenSize(w, h);
+
+		platforms.erase(
+			std::remove_if(platforms.begin(), platforms.end(),
+				[&](Platform* p) {
+					if (p->getCoordinates().y > h) {
+						// Удаляем и из entities
+						entities.erase(
+							std::remove(entities.begin(), entities.end(), p),
+							entities.end()
+						);
+						delete p;
+						return true;
+					}
+					return false;
+				}),
+			platforms.end()
+		);
+	}
+
+	virtual void spawnEnemyOnPlatform(Platform* p) {
+		int sw, sh;
+		getScreenSize(sw, sh);
+		
+		// Шанс появления врага 30%
+		if (rand() % 100 > 30) return;
+
+		Coordinates centre = p->getCentreCoordinates();
+		int enemyW = 60;
+		
+		float enemyX = centre.x - (enemyW / 2);  // центр врага = центр платформы
+		float enemyY = centre.y - 58.0f;                 // над платформой
+
+		Enemy* e = new Enemy(enemyX, enemyY, "C:/data/enemy.png");
+		entities.push_back(e);
+		enemies.push_back(e);
+	}
+
+	virtual void eraseEnemies() {
+		enemies.erase(
+			std::remove_if(enemies.begin(), enemies.end(),
+				[&](Enemy* e) {
+					int sw, sh;
+					getScreenSize(sw, sh);
+					if (e->getCoordinates().y > sh || e->getIsDead()) {
+						entities.erase(
+							std::remove(entities.begin(), entities.end(), e),
+							entities.end()
+						);
+						delete e;
+						return true;
+					}
+					return false;
+				}),
+			enemies.end()
+		);
+	}
+	virtual void collision() {
 		for (auto* entity : entities) {
 			if (!entity) continue;
-			Player* player = static_cast<Player*>(entity);
+			Player* player = dynamic_cast<Player*>(entity);
 			if (player) {
 				for (auto* entityOther : entities) {
 					if (player == entityOther) continue;
-					if (player->onCollided(entityOther)) {
-						std::cout << "Collided!" << std::endl;
-					}
+					player->collide(entityOther);
 				}
 			}
-			entity->reDraw();
-
 		}
+	}
 
-		
+	virtual bool Tick() {
+		environment->drawBackground();
+
+		int w, h;
+		getScreenSize(w, h);
+		Coordinates doodlePos = doodle->getCoordinates();
+		cameraMovement();
+
+		movement();
+		collision();
+		doodle->fall();
+
+		for (auto* entity : entities) {
+			if (entity) entity->reDraw();
+		}
+		doodle->reDraw();
+		std::cout << "Score: " << score << std::endl;
+
 		return false;
 	}
 

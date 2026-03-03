@@ -6,6 +6,7 @@ struct Coordinates {
 	Coordinates(float x_, float y_) {
 		this->x = x_;
 		this->y = y_;
+		
 	}
 	Coordinates& operator= (Coordinates other) {
 	
@@ -26,9 +27,9 @@ struct Coordinates {
 };
 
 class IEntity {
-
+protected:
+	Sprite* sprite = nullptr;
 	Coordinates coordinates;
-
 public:
 
 	virtual Coordinates getCoordinates() { return coordinates; }
@@ -36,13 +37,39 @@ public:
 	virtual int getHeight() = 0;
 	virtual void setCoordinates(Coordinates coordinatesNew) { coordinates = coordinatesNew; }
 
+	virtual Coordinates getCentreCoordinates() {
+		Coordinates pos = getCoordinates();
+		return Coordinates(
+			pos.x + getWidth() / 2,
+			pos.y + getHeight() / 2
+		);
+	}
+
 	virtual void move(FRSide side) {};
 
-	virtual void reDraw() = 0;
+    virtual void reDraw() {
+		Coordinates curCoordinates = getCoordinates();
+		if (sprite) {
+			drawSprite(sprite, curCoordinates.x, curCoordinates.y);
+		}
+	};
 
-	virtual void setSpritePicture(const char* path) = 0;
+    virtual void setSpritePicture(const char* path) {
+		if (sprite) {
+			destroySprite(sprite);
+			sprite = nullptr;
+		}
+		sprite = createSprite(path);
+	};
 
-	virtual bool onCollided(IEntity* other) = 0;
+	virtual ~IEntity() {
+		if (sprite) {
+			destroySprite(sprite);
+			sprite = nullptr;
+		}
+	}
+
+	virtual void collide(IEntity* other) = 0;
 	//принимает другого entity, если обьекты соприкоснулись то ->...
 };
 

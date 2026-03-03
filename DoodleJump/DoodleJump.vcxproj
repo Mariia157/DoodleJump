@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Environment.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Hitbox.h" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Environment.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="Player.cpp" />
