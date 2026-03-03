@@ -41,7 +41,7 @@ public:
 	
 
 	virtual bool Init() {
-
+		srand(time(0));
 		doodle = new Player();
 		environment = new Environment();
 		entities.push_back(doodle);
@@ -227,7 +227,14 @@ public:
 		}
 		doodle->reDraw();
 		std::cout << "Score: " << score << std::endl;
-
+		if (doodle->getIsDead())
+		{
+			std::cout << "Player dead!" << std::endl;
+			//Почистить все энтити
+			//Создать и отобразить gameover
+			//вывести score
+			//добавить кнопку рестарт
+		}
 		return false;
 	}
 

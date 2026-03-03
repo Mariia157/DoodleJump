@@ -20,6 +20,7 @@ class Player : public IEntity {
 	bool isOnPlatform = false;
 	float fallSpeed = 10.0f;
 	bool canJump = true;  // флаг для блокировки повторного прыжка в воздухе
+	bool isDead = false;
 public:
 
 	Player() {
@@ -43,6 +44,8 @@ public:
 
 	virtual int getWidth() { return doodleW; };
 	virtual int getHeight() { return doodleH; };
+	virtual bool getIsDead() { return isDead; }
+
 
 	void move(FRSide side) override {
 		Coordinates curCoordinates = getCoordinates();
@@ -73,7 +76,7 @@ public:
 
 		canJump = false;
 		isUp = true;
-		fallSpeed = -10.0f;  // импульс вверх, fall() будет двигать плавно
+		fallSpeed = -2.0f;  // импульс вверх, fall() будет двигать плавно
 	}
 
 	void fall() {
@@ -92,10 +95,10 @@ public:
 		cur.y += fallSpeed;
 		// Разная гравитация для подъёма и падения
 		if (fallSpeed < 0) {
-			fallSpeed += 0.1f;  // подъём — слабая гравитация
+			fallSpeed += 0.01f;  // подъём — слабая гравитация
 		}
 		else {
-			fallSpeed += 0.05f;  // падение — ещё слабее
+			fallSpeed += 0.005f;  // падение — ещё слабее
 		}
 
 		//Пол
@@ -111,40 +114,33 @@ public:
 	virtual void collide(IEntity* other) override {
 		if (!other) return;
 		Platform* platform = dynamic_cast<Platform*>(other);
-		if (!platform) return;
-
-		if (!isFall) return;
+		Enemy* enemy = dynamic_cast<Enemy*>(other);
 
 		Hitbox hitbox;
+
 		hitbox.setEntity(this);
 		hitbox.setHitboxSize(getWidth(), getHeight());
 		Coordinates pos = getCoordinates();
 		hitbox.setHitboxCoordinates(static_cast<int>(pos.x), static_cast<int>(pos.y));
+		if (hitbox.onCollided(other)) {
+			if (platform) {
+				if (hitbox.isCollidedAbove(other)) {
+					isFall = false;
+					isOnPlatform = true;  // ✅ запоминаем что стоим на платформе
+					jump();
 
-		if (hitbox.isCollidedAbove(other)) {
-			isFall = false;
-			isOnPlatform = true;  // ✅ запоминаем что стоим на платформе
-			jump();
-			return;
-		}
-		
-		// Коллизия с врагом
-		Enemy* enemy = dynamic_cast<Enemy*>(other);
-		if (enemy && !enemy->getIsDead()) {
-			Hitbox hitbox;
-			hitbox.setEntity(this);
-			hitbox.setHitboxSize(getWidth(), getHeight());
-			Coordinates pos = getCoordinates();
-			hitbox.setHitboxCoordinates(pos.x, pos.y);
-
-			if (hitbox.isCollidedAbove(other)) {
-				// Прыгнули сверху — убиваем врага
-				enemy->die();
-				jump();
+				}
 			}
-			else if (hitbox.onCollided(other)) {
-				// Столкнулись сбоку — игрок умирает
-				// TODO: gameOver()
+			// Коллизия с врагом
+			else if (enemy && !enemy->getIsDead()) {
+				if (hitbox.isCollidedAbove(other) && getIsFall()) {
+					// Прыгнули сверху — убиваем врага
+					enemy->die();
+					jump();
+				}
+				else{
+					isDead = true;
+				}
 			}
 		}
 	}
