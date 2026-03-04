@@ -1,151 +1,72 @@
 #pragma once
 #include "IEntity.h"
-#include <iostream>
 #include "Environment.h"
-#include "Constants.h"
 #include "Hitbox.h"
 #include "Platform.h"
-#include <vector>
 #include "Enemy.h"
-class Player : public IEntity {
+#include <iostream>
+#include <vector>
+#include "ImmunityOrb.h"
 
-    int doodleW = 0, doodleH = 0;
-	int speed = 0;
-	int w = 0, h = 0;
+class Player : public IEntity {
+	int doodleW = 0, doodleH = 0;
 	const char* spritePathLeft = "C:/data/blue-lik-left.png";
 	const char* spritePathRight = "C:/data/blue-lik-right.png";
 	bool isFall = false;
 	bool isUp = false;
-	Hitbox* hitbox = nullptr;
 	bool isOnPlatform = false;
 	float fallSpeed = 10.0f;
-	bool canJump = true;  // флаг для блокировки повторного прыжка в воздухе
-	bool isDead = false;
+	bool canJump = true;
+	int moveSpeed = 3;
+	float velocityX = 0.0f;
+	float normalJumpSpeed = -2.0f;  // обычный прыжок
+	float boostJumpSpeed = -6.0f;  // 300% от обычного
+	bool isImmune = false;
+	float immunityTimer = 0.0f;
+	const float IMMUNITY_DURATION = 20.0f * 60.0f;  // 20 секунд * 60 кадров
+
 public:
-
 	Player() {
+		int sw = 0, sh = 0;
+		setSpritePicture(spritePathLeft);  // загружает спрайт и обновляет w, h в IEntity
+		getScreenSize(sw, sh);
+		doodleW = getWidth();   // берём из IEntity — getSpriteSize уже вызван внутри setSpritePicture
+		doodleH = getHeight();
 
-        int w = 0, h = 0;
-		setSpritePicture("C:/data/blue-lik-left.png");
-		getScreenSize(w, h);
-		getSpriteSize(sprite, doodleW, doodleH);
-
-		float x = (w / 2) - (doodleW / 2);
-		float y = (h / 2) - (doodleH / 2);
+		float x = (sw / 2) - (doodleW / 2);
+		float y = (sh / 2) - (doodleH / 2);
 		setCoordinates(Coordinates(x, y));
-
-		drawSprite(sprite, x, y);
-		//std::cout << "Player created at (" << x << ", " << y << ")" << std::endl;
 	}
-    ~Player() = default;
+
+	~Player() = default;
 
 	bool getIsFall() { return isFall; }
 	bool getIsUp() { return isUp; }
 
-	virtual int getWidth() { return doodleW; };
-	virtual int getHeight() { return doodleH; };
-	virtual bool getIsDead() { return isDead; }
+	// Переопределяем чтобы возвращать doodleW/doodleH (могут отличаться при смене спрайта)
+	int getWidth()  override { return doodleW; }
+	int getHeight() override { return doodleH; }
 
+	float getVelocityX() { return velocityX; }
+	float getFallSpeed() { return fallSpeed; }
+	bool getIsImmune() { return isImmune; }
 
-	void move(FRSide side) override {
-		Coordinates curCoordinates = getCoordinates();
-		getScreenSize(w, h);
-		switch (side) {
-		case FRSide::RIGHT: {
-			setSpritePicture(spritePathRight);
-			curCoordinates.x += moveSpeed;
-			if (curCoordinates.x > w)
-				curCoordinates.x = 0;
-			setCoordinates(curCoordinates);
-			break;
-		}
-		case FRSide::LEFT: {
-			setSpritePicture(spritePathLeft);
-			curCoordinates.x -= moveSpeed;
-			if (curCoordinates.x < 0)
-				curCoordinates.x = w;
-			setCoordinates(curCoordinates);
-			break;
-		}
-		}
+	void setVelocityX(float vx) { velocityX = vx; }
+	void setFallSpeed(float fs) { fallSpeed = fs; }
 
-	}
+	void setSpritePicture(const char* path) override;
 
-	void jump() {
-		if (!canJump) return;  // блокируем повторный прыжок
+	void move(FRSide side) override;
 
-		canJump = false;
-		isUp = true;
-		fallSpeed = -2.0f;  // импульс вверх, fall() будет двигать плавно
-	}
+	void jump();
 
-	void fall() {
-		int sw, sh;
-		getScreenSize(sw, sh);
-		Coordinates cur = getCoordinates();
+	void boostedJump();
 
-		// Разрешаем прыжок только когда летим вниз
-		if (fallSpeed > 0) {
-			canJump = true;
-			isFall = true;
-			isUp = false;
-		}
+	void fall();
 
-		// Гравитация
-		cur.y += fallSpeed;
-		// Разная гравитация для подъёма и падения
-		if (fallSpeed < 0) {
-			fallSpeed += 0.01f;  // подъём — слабая гравитация
-		}
-		else {
-			fallSpeed += 0.005f;  // падение — ещё слабее
-		}
+	void activateImmunity();
 
-		//Пол
-		if (cur.y >= sh - doodleH) {
-			cur.y = sh - doodleH;
-			fallSpeed = 0.0f;
-			isFall = false;
-			jump();  // прыжок от пола
-		}
+	void updateImmunity();
 
-		setCoordinates(cur);
-	}
-	virtual void collide(IEntity* other) override {
-		if (!other) return;
-		Platform* platform = dynamic_cast<Platform*>(other);
-		Enemy* enemy = dynamic_cast<Enemy*>(other);
-
-		Hitbox hitbox;
-
-		hitbox.setEntity(this);
-		hitbox.setHitboxSize(getWidth(), getHeight());
-		Coordinates pos = getCoordinates();
-		hitbox.setHitboxCoordinates(static_cast<int>(pos.x), static_cast<int>(pos.y));
-		if (hitbox.onCollided(other)) {
-			if (platform) {
-				if (hitbox.isCollidedAbove(other)) {
-					isFall = false;
-					isOnPlatform = true;  // ✅ запоминаем что стоим на платформе
-					jump();
-
-				}
-			}
-			// Коллизия с врагом
-			else if (enemy && !enemy->getIsDead()) {
-				if (hitbox.isCollidedAbove(other) && getIsFall()) {
-					// Прыгнули сверху — убиваем врага
-					enemy->die();
-					jump();
-				}
-				else{
-					isDead = true;
-				}
-			}
-		}
-	}
-
-	void attack(FRMouseButton lmb) {
-		
-	}
+	void collide(IEntity* other) override;
 };

@@ -93,6 +93,26 @@ public:
 
 	virtual void eraseEnemies() = 0;
 
+	virtual void gameOver() = 0;
+
+	virtual void checkBulletsCollision() = 0;
+
+	virtual void eraseBullets() = 0;
+
+	virtual void spawnBlackHole(float y) = 0;
+
+	virtual void applyBlackHoles() = 0;
+
+	virtual void eraseBlackHoles() = 0;
+
+   virtual void spawnOrbOnPlatform(Platform* p) = 0;
+
+	virtual void eraseOrbs() = 0;
+
+	virtual void loadRestartButton() = 0;
+
+	virtual void restart() = 0;
+
 	virtual ~Framework() {};
 };
 

@@ -6,22 +6,17 @@ struct Coordinates {
 	Coordinates(float x_, float y_) {
 		this->x = x_;
 		this->y = y_;
-		
 	}
 	Coordinates& operator= (Coordinates other) {
-	
 		this->x = other.x;
 		this->y = other.y;
 		return *this;
 	}
-
 	Coordinates& operator+ (Coordinates other) {
-
 		this->x += other.x;
 		this->y += other.y;
 		return *this;
 	}
-
 	float x = 0;
 	float y = 0;
 };
@@ -30,37 +25,31 @@ class IEntity {
 protected:
 	Sprite* sprite = nullptr;
 	Coordinates coordinates;
+	int w = 0, h = 0;      // размеры спрайта — общие для всех наследников
+	bool isDead = false;   // флаг смерти — общий для Enemy, Player и др.
+
 public:
 
+	// Координаты
 	virtual Coordinates getCoordinates() { return coordinates; }
-	virtual int getWidth() = 0;
-	virtual int getHeight() = 0;
 	virtual void setCoordinates(Coordinates coordinatesNew) { coordinates = coordinatesNew; }
 
-	virtual Coordinates getCentreCoordinates() {
-		Coordinates pos = getCoordinates();
-		return Coordinates(
-			pos.x + getWidth() / 2,
-			pos.y + getHeight() / 2
-		);
-	}
+	virtual Coordinates getCentreCoordinates();
 
-	virtual void move(FRSide side) {};
+	// Размеры — берутся из w, h которые задаются через loadSprite
+	virtual int getWidth() { return w; }
+	virtual int getHeight() { return h; }
+	virtual bool getIsDead() { return isDead; }
+	virtual void die() { isDead = true; }
 
-    virtual void reDraw() {
-		Coordinates curCoordinates = getCoordinates();
-		if (sprite) {
-			drawSprite(sprite, curCoordinates.x, curCoordinates.y);
-		}
-	};
+	// Спрайт — общая логика загрузки и отрисовки
+	virtual void setSpritePicture(const char* path);
 
-    virtual void setSpritePicture(const char* path) {
-		if (sprite) {
-			destroySprite(sprite);
-			sprite = nullptr;
-		}
-		sprite = createSprite(path);
-	};
+	virtual void reDraw();
+	
+	virtual void move(FRSide side) {}
+	// Коллизия — обязательна для реализации
+	virtual void collide(IEntity* other) = 0;
 
 	virtual ~IEntity() {
 		if (sprite) {
@@ -68,9 +57,4 @@ public:
 			sprite = nullptr;
 		}
 	}
-
-	virtual void collide(IEntity* other) = 0;
-	//принимает другого entity, если обьекты соприкоснулись то ->...
 };
-
-//func = 0; обязательная реализация для наследников
