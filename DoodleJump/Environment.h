@@ -9,7 +9,7 @@ extern FRKey currentKey;
 class Environment
 {
     Sprite* backgroundSprite = nullptr;
-    const char* backgroundPicture = "C:/data/bck@2x.png";
+    const char* backgroundPicture = "./data/bck@2x.png";
 	Sprite* scoreSprite = nullptr;
     int score = 0;
 public:

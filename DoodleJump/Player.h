@@ -10,8 +10,8 @@
 
 class Player : public IEntity {
 	int doodleW = 0, doodleH = 0;
-	const char* spritePathLeft = "C:/data/blue-lik-left.png";
-	const char* spritePathRight = "C:/data/blue-lik-right.png";
+	const char* spritePathLeft = "./data/blue-lik-left.png";
+	const char* spritePathRight = "./data/blue-lik-right.png";
 	bool isFall = false;
 	bool isUp = false;
 	bool isOnPlatform = false;

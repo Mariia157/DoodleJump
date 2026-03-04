@@ -55,7 +55,7 @@ public:
 		for (int i = 0; i < 8; i++) {
 			float randX = rand() % (screenW - 64);
 			lastPlatformY -= 60.0f;
-			Platform* p = new Platform(randX, lastPlatformY, "C:/data/platform.png");
+			Platform* p = new Platform(randX, lastPlatformY, "./data/platform.png");
 			entities.push_back(p);
 			platforms.push_back(p);
 		}
@@ -68,7 +68,7 @@ public:
 
 	virtual void loadRestartButton() {
 		if (restartSprite) destroySprite(restartSprite);
-		restartSprite = createSprite("C:/data/play-again-on@2x.png");
+		restartSprite = createSprite("./data/play-again-on@2x.png");
 		if (restartSprite) {
 			int sw, sh;
 			getScreenSize(sw, sh);
@@ -99,10 +99,9 @@ public:
 
 		// Пересоздаём игрока
       doodle = new Player();
-		// Add player back to entities so collision/drawing loops see it
+	
 		entities.push_back(doodle);
 
-		// Clear bullets (delete any remaining projectiles from previous run)
 		for (auto* b : bullets) delete b;
 		bullets.clear();
 
@@ -113,7 +112,7 @@ public:
 		for (int i = 0; i < 8; i++) {
 			float randX = rand() % (sw - 64);
 			lastPlatformY -= 75.0f;
-			Platform* p = new Platform(randX, lastPlatformY, "C:/data/platform.png");
+			Platform* p = new Platform(randX, lastPlatformY, "./data/platform.png");
 			entities.push_back(p);
 			platforms.push_back(p);
 		}
@@ -230,12 +229,12 @@ public:
 
 			if (isBoost) {
 				p = new Platform(randX, highestPlatformY,
-					"C:/data/platform-boost.png",  // другой спрайт
+					"./data/platform-boost.png",  // другой спрайт
 					PlatformType::BOOST);
 			}
 			else {
 				p = new Platform(randX, highestPlatformY,
-					"C:/data/platform.png",
+					"./data/platform.png",
 					PlatformType::NORMAL);
 			}
 
@@ -283,7 +282,7 @@ public:
 		float enemyX = centre.x - (enemyW / 2);  // центр врага = центр платформы
 		float enemyY = centre.y - 58.0f;                 // над платформой
 
-		Enemy* e = new Enemy(enemyX, enemyY, "C:/data/enemy.png");
+		Enemy* e = new Enemy(enemyX, enemyY, "./data/enemy.png");
 		entities.push_back(e);
 		enemies.push_back(e);
 	}
@@ -313,7 +312,7 @@ public:
 		int sw, sh;
 		getScreenSize(sw, sh);
 		float randX = rand() % (sw - 64);
-		BlackHole* bh = new BlackHole(randX, y, "C:/data/hole.png");
+		BlackHole* bh = new BlackHole(randX, y, "./data/hole.png");
 		entities.push_back(bh);
 		blackHoles.push_back(bh);
 	}
@@ -345,7 +344,7 @@ public:
 		ImmunityOrb* orb = new ImmunityOrb(
 			centre.x,
 			p->getCoordinates().y - 32.0f,  // над платформой
-			"C:/data/immunity-orb.png"
+			"./data/immunity-orb.png"
 		);
 		entities.push_back(orb);
 		orbs.push_back(orb);
@@ -428,7 +427,7 @@ public:
 		blackHoles.clear();
 		orbs.clear();
 		// Загружаем экран game over
-		gameOverSprite = createSprite("C:/data/race-over.png");
+		gameOverSprite = createSprite("./data/race-over.png");
 		loadRestartButton();
 	}
 
@@ -488,7 +487,7 @@ public:
         if (isGameOver &&
             mouseX >= restartX && mouseX <= restartX + restartW &&
             mouseY >= restartY && mouseY <= restartY + restartH) {
-            restart();  // ✅
+            restart(); 
             return;
         }
 
@@ -499,7 +498,7 @@ public:
             float bulletY = cur.y + (doodle->getHeight() / 2);
             bullets.push_back(new Projectile(
                 bulletX, bulletY, mouseX, mouseY,
-                "C:/data/bullet.png"
+                "./data/projectile.png"
             ));
         }
     }
