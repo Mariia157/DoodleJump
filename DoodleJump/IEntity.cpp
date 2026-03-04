@@ -8,18 +8,17 @@ Coordinates IEntity::getCentreCoordinates() {
 	);
 }
 
-// Спрайт — общая логика загрузки и отрисовки
 void IEntity::setSpritePicture(const char* path) {
 	if (sprite) {
 		destroySprite(sprite);
 		sprite = nullptr;
 	}
 	sprite = createSprite(path);
-	if (sprite) getSpriteSize(sprite, w, h);  // автоматически обновляем размеры
+	if (sprite) getSpriteSize(sprite, w, h);
 }
 
 void IEntity::reDraw() {
-	if (isDead) return;  // мёртвые объекты не отрисовываются
+	if (isDead) return;
 	Coordinates pos = getCoordinates();
 	if (sprite) drawSprite(sprite, pos.x, pos.y);
 }

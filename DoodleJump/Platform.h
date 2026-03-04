@@ -19,9 +19,9 @@ struct Platform : public IEntity {
 		: Platform(static_cast<float>(x), static_cast<float>(y), path, t) {
 	}
 
-	~Platform() = default;  // деструктор спрайта уже в ~IEntity()
+	~Platform() = default;
 
 	PlatformType getType() { return type; }
 
-	void collide(IEntity* other) override {}  // платформы не реагируют на коллизии
+	void collide(IEntity* other) override {}
 };

@@ -9,12 +9,12 @@ void BlackHole::applyGravity(float& playerVelX, float& playerVelY, float playerX
 
     // Расстояние до чёрной дыры
     float distance = std::sqrt(dx * dx + dy * dy);
-    if (distance < 1.0f) distance = 1.0f;  // избегаем деления на ноль
+    if (distance < 1.0f) distance = 1.0f; 
 
     // Сила притяжения обратно пропорциональна расстоянию
     float force = pullStrength / (distance * distance);
 
-    // Нормализуем вектор и применяем силу
+    // Нормализация вектор и применяем силу
     playerVelX += (dx / distance) * force;
     playerVelY += (dy / distance) * force;
 }

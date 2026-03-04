@@ -25,8 +25,8 @@ class IEntity {
 protected:
 	Sprite* sprite = nullptr;
 	Coordinates coordinates;
-	int w = 0, h = 0;      // размеры спрайта — общие для всех наследников
-	bool isDead = false;   // флаг смерти — общий для Enemy, Player и др.
+	int w = 0, h = 0;      
+	bool isDead = false;  
 
 public:
 
@@ -42,13 +42,12 @@ public:
 	virtual bool getIsDead() { return isDead; }
 	virtual void die() { isDead = true; }
 
-	// Спрайт — общая логика загрузки и отрисовки
 	virtual void setSpritePicture(const char* path);
 
 	virtual void reDraw();
 	
 	virtual void move(FRSide side) {}
-	// Коллизия — обязательна для реализации
+	
 	virtual void collide(IEntity* other) = 0;
 
 	virtual ~IEntity() {

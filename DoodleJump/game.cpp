@@ -38,14 +38,15 @@ public:
 
 	virtual void PreInit(int& width, int& height, bool& fullscreen)
 	{
-		//environment->setWindowSize(width, height);
-		width = 500;
-		height = 600;
+		environment->setWindowSize(screenW, screenH);
+		width = screenW;
+		height = screenH;
 
 		fullscreen = false;
 	}
 
 	virtual bool Init() {
+		
 		srand(time(0));
 		doodle = new Player();
 		environment = new Environment();
@@ -82,7 +83,6 @@ public:
 	virtual void restart() {
 		isGameOver = false;
 
-		// Удаляем все сущности
 		for (auto* entity : entities) delete entity;
 		entities.clear();
 		platforms.clear();
@@ -90,14 +90,12 @@ public:
 		blackHoles.clear();
 		orbs.clear();
 
-		// Сбрасываем переменные
 		score = 0;
 		platformsPassed = 0;
 		cameraOffset = 0.0f;
 		lastPlatformY = 0.0f;
 		highestPlatformY = 0.0f;
 
-		// Пересоздаём игрока
       doodle = new Player();
 	
 		entities.push_back(doodle);
@@ -105,7 +103,6 @@ public:
 		for (auto* b : bullets) delete b;
 		bullets.clear();
 
-		// Генерируем начальные платформы
 		int sw, sh;
 		getScreenSize(sw, sh);
 		lastPlatformY = sh;
@@ -149,7 +146,6 @@ public:
 			// Двигаем игрока вниз
 			doodle->setCoordinates(Coordinates(doodlePos.x, h / 2));
 
-			
 			for (auto* p : platforms) {
 				Coordinates pos = p->getCoordinates();
 				pos.y += shift;
@@ -188,7 +184,7 @@ public:
 			eraseOrbs();
 		}
 	}
-	// Отдельная функция для притяжения:
+	
 	virtual void applyBlackHoles() {
 		Coordinates playerPos = doodle->getCoordinates();
 		float velX = doodle->getVelocityX();
@@ -204,8 +200,6 @@ public:
 				doodle->die();
 			}
 		}
-
-		// Применяем изменённые скорости
 		doodle->setVelocityX(velX);
 		doodle->setFallSpeed(velY);
 	}
@@ -213,7 +207,7 @@ public:
 	virtual void generatePlatforms() {
 		int w, h;
 		getScreenSize(w, h);
-		// Находим самую высокую платформу
+		
 		highestPlatformY = h;
 		for (auto* p : platforms) {
 			highestPlatformY = std::min(highestPlatformY, p->getCoordinates().y);
@@ -229,7 +223,7 @@ public:
 
 			if (isBoost) {
 				p = new Platform(randX, highestPlatformY,
-					"./data/platform-boost.png",  // другой спрайт
+					"./data/platform-boost.png",
 					PlatformType::BOOST);
 			}
 			else {
@@ -238,7 +232,6 @@ public:
 					PlatformType::NORMAL);
 			}
 
-			// `p` is already created above depending on `isBoost`, just use it
 			entities.push_back(p);
 			platforms.push_back(p);
 			spawnEnemyOnPlatform(p);
@@ -417,7 +410,6 @@ public:
 	virtual void gameOver() {
 		if (isGameOver) return;
 		isGameOver = true;
-		// Удаляем все сущности
 		for (auto* entity : entities) {
 			delete entity;
 		}
@@ -426,7 +418,6 @@ public:
 		enemies.clear();
 		blackHoles.clear();
 		orbs.clear();
-		// Загружаем экран game over
 		gameOverSprite = createSprite("./data/race-over.png");
 		loadRestartButton();
 	}
@@ -434,7 +425,6 @@ public:
 	virtual bool Tick() {
 		environment->drawBackground();
 
-		//Показываем game over и останавливаем всю логику
 		if (isGameOver) {
 			if (gameOverSprite) {
 				int sw, sh;
@@ -445,20 +435,16 @@ public:
 					(sw / 2) - (spriteW / 2),
 					(sh / 2) - (spriteH / 2));
 			}
-			// Рисуем кнопку рестарта
 			if (restartSprite) {
 				drawSprite(restartSprite, restartX, restartY);
 			}
 			return false;
 		}
-
-		// Проверяем смерть до любой логики
 		if (doodle->getIsDead()) {
 			gameOver();
 			return false;
 		}
 
-		// Вся игровая логика только если игра идёт
 		cameraMovement();
 		movement();
 		applyBlackHoles();

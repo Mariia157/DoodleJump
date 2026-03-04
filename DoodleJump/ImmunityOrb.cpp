@@ -1,7 +1,7 @@
 #include "ImmunityOrb.h"
 
 void ImmunityOrb::reDraw() {
-    if (isPickedUp) return;  // не рисуем после подбора
+    if (isPickedUp) return; 
     Coordinates pos = getCoordinates();
     if (sprite) drawSprite(sprite, pos.x, pos.y);
 }

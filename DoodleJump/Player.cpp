@@ -1,7 +1,7 @@
 #include "Player.h"
 
 void Player::setSpritePicture(const char* path) {
-	IEntity::setSpritePicture(path);  // загружает спрайт и обновляет w, h
+	IEntity::setSpritePicture(path);
 	doodleW = w;
 	doodleH = h;
 }
@@ -117,7 +117,7 @@ void Player::collide(IEntity* other) {
 			}
 		}
 	}
-	else if (orb && !orb->getIsPickedUp()) {  // ✅ орб на том же уровне что platform и enemy
+	else if (orb && !orb->getIsPickedUp()) {
 		orb->pickUp();
 		activateImmunity();
 	}
@@ -127,7 +127,7 @@ void Player::collide(IEntity* other) {
 			jump();
 		}
 		else {
-			die();  // используем метод из IEntity
+			die();
 		}
 	}
 }

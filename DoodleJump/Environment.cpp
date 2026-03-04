@@ -8,8 +8,7 @@ void Environment::setBackgroundPicture(const char* path) {
     if (backgroundSprite != nullptr) {
         destroySprite(backgroundSprite);
     }
-    backgroundSprite = createSprite(path);  // только загрузка
-    // Растягиваем на весь экран
+    backgroundSprite = createSprite(path); 
     if (backgroundSprite != nullptr) {
         int w, h;
         getScreenSize(w, h);
@@ -20,7 +19,6 @@ void Environment::setBackgroundPicture(const char* path) {
 
 void Environment::drawBackground() {
     if (backgroundSprite != nullptr) {
-        drawSprite(backgroundSprite, 0, 0);  // отрисовка отдельно
-        //std::cout << "background drown" << std::endl;
+        drawSprite(backgroundSprite, 0, 0);
     }
 }

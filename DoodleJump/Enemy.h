@@ -5,11 +5,11 @@
 class Enemy : public IEntity {
 public:
 	Enemy(float x, float y, const char* path) {
-		setSpritePicture(path);  // загружает спрайт и обновляет w, h через IEntity
+		setSpritePicture(path);
 		setCoordinates(Coordinates(x, y));
 	}
 
-	~Enemy() = default;  // деструктор спрайта уже в ~IEntity()
+	~Enemy() = default;
 
-	void collide(IEntity* other) override {}  // логика коллизии на стороне Player
+	void collide(IEntity* other) override {}
 };

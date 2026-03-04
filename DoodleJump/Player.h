@@ -28,9 +28,9 @@ class Player : public IEntity {
 public:
 	Player() {
 		int sw = 0, sh = 0;
-		setSpritePicture(spritePathLeft);  // загружает спрайт и обновляет w, h в IEntity
+		setSpritePicture(spritePathLeft);  
 		getScreenSize(sw, sh);
-		doodleW = getWidth();   // берём из IEntity — getSpriteSize уже вызван внутри setSpritePicture
+		doodleW = getWidth();  
 		doodleH = getHeight();
 
 		float x = (sw / 2) - (doodleW / 2);
@@ -43,7 +43,6 @@ public:
 	bool getIsFall() { return isFall; }
 	bool getIsUp() { return isUp; }
 
-	// Переопределяем чтобы возвращать doodleW/doodleH (могут отличаться при смене спрайта)
 	int getWidth()  override { return doodleW; }
 	int getHeight() override { return doodleH; }
 
